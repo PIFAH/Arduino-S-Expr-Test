@@ -59,13 +59,6 @@ I think I probably don't need to continue work on this file until my use-cases s
 #include "limits.h"
 #include "S-Expr.h"
 
-// Can this be an enum?
-const int NIL_T = 0;
-const int CONS_T = 1;
-const int INT_T = 2;
-const int STRING_T = 3;
-
-    
 // sexpr NIL = { .tp = NIL_T, .car = NULL, .cdr = NULL };
 
 // sexpr NIL = *cons_nil();
@@ -117,7 +110,6 @@ boolean test_parse2() {
   return p;
 }
 
-
 boolean test_parse3() {
   sexpr* a = parse("(m)");
   sexpr* b = cons(cons_string("m"),cons_nil());
@@ -125,6 +117,34 @@ boolean test_parse3() {
   return p;
 }
 
+boolean test_parse4() {
+  sexpr* a = parse("400");
+  sexpr* b = cons_int(400);
+  boolean p =  equal(a,b); 
+  return p;
+}
+
+boolean test_parse5() {
+  sexpr* a = parse("(2 400)");
+  sexpr* b = cons(cons_int(2),cons(cons_int(400),cons_nil()));
+  Serial.println("nth(a,1)");
+  String n = print_as_String(nth(a,1));
+  Serial.println(n);
+  Serial.println(value_i(nth(a,1)));
+  boolean p =  equal(a,b); 
+  return p;
+}
+
+boolean test_value_i_0() {
+  sexpr* a = cons_int(400);
+  Serial.println("nth(a,1)");
+  String str = print_as_String(a);
+  Serial.println(str);
+  int n = value_i(a);
+  Serial.println(value_i(a));
+  boolean p = (n == 400);
+  return p;
+}
 
 boolean test_parse10() {
   sexpr* a = parse("((4))");
@@ -187,6 +207,14 @@ boolean test_nth() {
     ;
 }
 
+boolean test_length() {
+   sexpr* a = parse("(m 4 5 (6))");
+   int lena = s_length(a);
+   int lenb = s_length(parse("(m)"));
+   int lenc = s_length(parse("()"));
+   return (lena == 4) && (lenb == 1) && (lenc == 0);
+}
+
 void setup()
 {
   // It is possible that this is a real problem for battery powered operation!!!!
@@ -211,6 +239,16 @@ void loop()
 
   Serial.print("test_parse3: ");
   Serial.println(test_parse3() ? "GREEN" : "RED");
+  
+  Serial.print("test_parse4: ");
+  Serial.println(test_parse4() ? "GREEN" : "RED");
+
+  Serial.print("test_value_i_0: ");
+  Serial.println(test_value_i_0() ? "GREEN" : "RED");
+  
+
+  Serial.print("test_parse5: ");
+  Serial.println(test_parse5() ? "GREEN" : "RED");
 
   Serial.print("test_equal2: ");
   Serial.println(test_equal2() ? "GREEN" : "RED");
