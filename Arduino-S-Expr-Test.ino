@@ -65,154 +65,227 @@ I think I probably don't need to continue work on this file until my use-cases s
 
 boolean test_equal1() {
   sexpr* b = cons(cons_int(4),cons(cons_int(5),cons(cons_int(6),cons_nil())));
-  boolean p =  equal(b,b); 
+  boolean p =  equal(b,b);
+  del(b);
   return p;
 }
 
 boolean test_equal2() {
-  sexpr* b = cons_string("methyl");
-  sexpr* a = cons_string("methyl");
-  boolean p =  equal(a,b); 
+  TOKEN tk = getToken((char *) "methyl",0);
+  if (tk.terminator != 6) return false;
+  sexpr* b = cons_string(tk);
+  sexpr* a = cons_string(tk);
+  boolean p =  equal(a,b);
+  del(a);
+  del(b);
   return p;
 }
+
 boolean test_equal3() {
-  boolean p =  equal(cons_nil(),cons_nil()); 
+  sexpr* a = cons_nil();
+  sexpr* b = cons_nil();
+  boolean p =  equal(a,b);
+  del(a);
+  del(b);
   return p;
 }
 boolean test_equal4() {
   sexpr* b = cons_int(37);
   sexpr* a = cons_int(37);
   boolean p =  equal(a,b); 
+  del(a);
+  del(b);
   return p;
 }
 
 boolean test_equal5() {
-  sexpr* b = cons(cons_string("m"),cons(cons_int(4),cons(cons_int(5),cons(cons_int(6),cons_nil()))));
-  sexpr* a = parse("(m 4 5 6)");
+  TOKEN tk = getToken((char *) "m",0);  
+  sexpr* b = cons(cons_string(tk),cons(cons_int(4),cons(cons_int(5),cons(cons_int(6),cons_nil()))));
+  sexpr* a = parse((char *) "(m 4 5 6)");
   boolean p =  equal(b,b);
-  print_sexpr(a);
-  print_sexpr(b);
-  boolean q =  equal(a,b); 
+  //  print_sexpr(a);
+  //  print_sexpr(b);
+  boolean q =  equal(a,b);
+  del(a);
+  del(b);
   return p && q;
 }
 
 boolean test_parse1() {
-  sexpr* a = parse("methyl");
-  sexpr* b = cons_string("methyl");
-  boolean p =  equal(a,b); 
+  TOKEN tk = getToken((char *) "methyl",0);
+    
+  sexpr* a = parse((char *) "methyl");
+  sexpr* b = cons_string(tk);
+ 
+  boolean p =  equal(a,b);
+  del(a);
+  del(b);
+  
   return p;
 }
 
 boolean test_parse2() {
-  sexpr* a = parse("4");
+  sexpr* a = parse((char *) "4");
   sexpr* b = cons_int(4);
   boolean p =  equal(a,b); 
+  del(a);
+  del(b);
   return p;
+}
+
+boolean test_getToken() {
+  TOKEN tk0 = getToken((char *) "(m)",0);
+  TOKEN tk1 = getToken((char *) "(m)",1);
+  TOKEN tk2 = getToken((char *) "(m)",2);
+  return (tk0.terminator == 1) && (tk1.terminator == 2) && (tk2.terminator == 3);
 }
 
 boolean test_parse3() {
-  sexpr* a = parse("(m)");
-  sexpr* b = cons(cons_string("m"),cons_nil());
-  boolean p =  equal(a,b); 
-  return p;
+  sexpr* a = parse((char *) "(m)");
+  TOKEN tk = getToken((char *) "m",0);
+  sexpr* b = cons(cons_string(tk),cons_nil());
+  boolean p =  equal(a,b);
+  del(b);
+  del(a);
+ return p;
 }
 
 boolean test_parse4() {
-  sexpr* a = parse("400");
+  sexpr* a = parse((char *) "400");
   sexpr* b = cons_int(400);
   boolean p =  equal(a,b); 
+  del(a);
+  del(b);
   return p;
 }
 
 boolean test_parse5() {
-  sexpr* a = parse("(2 400)");
+  sexpr* a = parse((char *) "(2 400)");
   sexpr* b = cons(cons_int(2),cons(cons_int(400),cons_nil()));
-  Serial.println("nth(a,1)");
-  String n = print_as_String(nth(a,1));
-  Serial.println(n);
-  Serial.println(value_i(nth(a,1)));
   boolean p =  equal(a,b); 
+  del(a);
+  del(b);
   return p;
 }
 
 boolean test_value_i_0() {
   sexpr* a = cons_int(400);
-  Serial.println("nth(a,1)");
   String str = print_as_String(a);
-  Serial.println(str);
   int n = value_i(a);
-  Serial.println(value_i(a));
   boolean p = (n == 400);
+  del(a);
   return p;
 }
 
 boolean test_parse10() {
-  sexpr* a = parse("((4))");
-  print_sexpr(a);
+  sexpr* a = parse((char *) "((4))");
+  del(a);
   return true;
 }
 
 boolean test_parse11() {
-  sexpr* a = parse("((4) 2)");
-  canon_print_sexpr(a);
-  print_sexpr(a);
+  sexpr* a = parse((char *) "((4) 2)");
+  // canon_print_sexpr(a);
+  //  print_sexpr(a);
+  del(a);
   return true;
 }
 
 boolean test_parse12() {
-  sexpr* b = cons(cons_string("m"),cons(cons_int(4),cons(cons_int(5),cons(cons_int(6),cons_nil()))));
-  sexpr* a = parse("(m 4 5 6)");
-  print_sexpr(b);
-  print_sexpr(a);
-  boolean p =  equal(a,b); 
+  TOKEN tk = getToken((char *) "m",0);
+  sexpr* b = cons(cons_string(tk),cons(cons_int(4),cons(cons_int(5),cons(cons_int(6),cons_nil()))));
+  sexpr* a = parse((char *) "(m 4 5 6)");
+  //  print_sexpr(b);
+  //  print_sexpr(a);
+  boolean p =  equal(a,b);
+  del(a);
+  del(b);
   return p;
 }
 
 
 boolean test_tokenize() {
-  String s = "(A)";
+  char s[] = "(A)";
 
-  return getToken(s,0).equals("(")
-    &&  getToken(s,1).equals("A")
-    && getToken(s,2).equals(")");
+  return TokenEquals_string(getToken(s,0),"(")
+    &&  TokenEquals_string(getToken(s,1),"A")
+    && TokenEquals_string(getToken(s,2),")");
+}
+
+boolean test_print1() {
+  /* char const * spudlist  = "tram"; */
+  /* sexpr* s = parse((char *) spudlist); */
+  /* String p = print_as_String(s); */
+  /* Serial.println(p); */
+
+  char const * list  = "(spud)";
+  sexpr* a = parse((char *) list);
+		 
+  String pa = print_as_String(a);
+  return pa.equals("(spud)");
 }
 
 boolean test_loop() {
   const int n = 3;
-  String ss[n] = { "(((3) (4)) 5)",
+  char const * ss[n] = { "(((3) (4)) 5)",
 		   "(spud (4))",
 		   "(sum (4 3) (3 2))"
   };
 
   for (int i = 0; i < n; i++) {
-    sexpr* s = parse(ss[i]);
+    sexpr* s = parse((char *) ss[i]);
     String p = print_as_String(s);
     if (!p.equals(ss[i])) {
       Serial.println("RED:");
       Serial.println(ss[i]);
       Serial.println(p);
     }
+    del(s);
   }
   return true;
 }
 
 boolean test_nth() {
-  sexpr* a = parse("(m 4 5 6)");
+  TOKEN tk = getToken((char *) "m",0);
+  sexpr* a = parse((char *) "(m 4 5 6)");
   return !(
-     equal(nth(a,0),cons_string("m"))
+     equal(nth(a,0),cons_string(tk))
         && equal(nth(a,1),cons_int(4))
         && equal(nth(a,2),cons_int(5))
         &&
 	   equal(nth(a,4),(sexpr*) cons_nil()))
     ;
+  del(a);
 }
 
 boolean test_length() {
-   sexpr* a = parse("(m 4 5 (6))");
+   sexpr* a = parse((char *) "(m 4 5 (6))");
    int lena = s_length(a);
-   int lenb = s_length(parse("(m)"));
-   int lenc = s_length(parse("()"));
+   sexpr* b = parse((char *) "(m)");
+   sexpr* c = parse((char *) "()");   
+   int lenb = s_length(b);
+   int lenc = s_length(c);
+   del(a);
+   del(b);
+   del(c);   
    return (lena == 4) && (lenb == 1) && (lenc == 0);
+}
+
+int freeRam () 
+{
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
+boolean test_delete() {
+  int f = freeRam();
+  for(int i = 0; i < 50; i++) {
+    sexpr* a = parse((char *) "(m 4 5 (6))");
+    del(a);
+  }
+  int g = freeRam();
+  return (f == g);
 }
 
 void setup()
@@ -237,9 +310,12 @@ void loop()
   Serial.print("test_parse2: ");
   Serial.println(test_parse2() ? "GREEN" : "RED");
 
+  Serial.print("test_getToken: ");
+  Serial.println(test_getToken() ? "GREEN" : "RED");
+
   Serial.print("test_parse3: ");
   Serial.println(test_parse3() ? "GREEN" : "RED");
-  
+
   Serial.print("test_parse4: ");
   Serial.println(test_parse4() ? "GREEN" : "RED");
 
@@ -262,8 +338,11 @@ void loop()
   Serial.print("test10: ");
   Serial.println(test_parse10() ? "GREEN" : "RED");
 
-  Serial.print("test11: ");
+  Serial.print("test_parse11: ");
   Serial.println(test_parse11() ? "GREEN" : "RED");
+
+  Serial.print("test_print1: ");
+  Serial.println(test_print1() ? "GREEN" : "RED");
 
   Serial.print("test_loop: ");
   Serial.println(test_loop() ? "GREEN" : "RED");
@@ -277,6 +356,9 @@ void loop()
 
   Serial.print("test_nth: ");
   Serial.println(test_nth() ? "GREEN" : "RED");
+
+  Serial.print("test_delete: ");
+  Serial.println(test_delete() ? "GREEN" : "RED");
 
   delay(5000);
 }
